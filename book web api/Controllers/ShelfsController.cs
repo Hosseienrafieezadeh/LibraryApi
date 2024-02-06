@@ -2,35 +2,48 @@
 using book_web_api.Services.Shelfs;
 using book_web_api.Services.Shelfs.ShelfsDto;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 
 namespace book_web_api.Controllers
 {
-        [ApiController]
-        [Route("api/Shelfs")]
-    public class ShelfsController
+    [ApiController]
+    [Route("api/Shelfs")]
+    public class ShelfsController : ControllerBase
     {
-      
-            ShelfServices _ShelfServices = new ShelfServices();
-            [HttpPost("add-shelf")]
-            public void AddShelf([FromBody] AddShelfDto dto)
-            {
-                _ShelfServices.AddShelf(dto);
-            }
-            [HttpDelete("delete-shelf/{id}")]
-            public void DeleteShelf([FromRoute] int id)
-            {
-                _ShelfServices.DeleteShelfs(id);
-            }
-            [HttpPatch("update-shelf/{id}")]
-            public void UpdateShelf([FromRoute] int id, [FromBody] UpdateShelfDto dto)
-            {
-                _ShelfServices.UpdateBook(id, dto);
-            }
-            [HttpGet("get-shelf")]
-            public List<Shelf> GetShelf()
-            {
-                return _ShelfServices.GetShelfs();
-            }
+        private readonly ShelfServices _shelfServices;
+
+        public ShelfsController(ShelfServices shelfServices)
+        {
+            _shelfServices = shelfServices ?? throw new ArgumentNullException(nameof(shelfServices));
+        }
+
+        [HttpPost("add-shelf")]
+        public IActionResult AddShelf([FromBody] AddShelfDto dto)
+        {
+            _shelfServices.AddShelf(dto);
+            return NoContent();
+        }
+
+        [HttpDelete("delete-shelf/{name}")]
+        public IActionResult DeleteShelf(string name)
+        {
+            _shelfServices.DeleteShelf(name);
+            return NoContent();
+        }
+
+        [HttpPatch("update-shelf/{name}")]
+        public IActionResult UpdateShelf(string name, [FromBody] UpdateShelfDto dto)
+        {
+            _shelfServices.UpdateShelf(name, dto);
+            return NoContent();
+        }
+
+        [HttpGet("get-shelf")]
+        public ActionResult<List<Shelf>> GetShelf()
+        {
+            var shelves = _shelfServices.GetShelves();
+            return Ok(shelves);
         }
     }
-
+}

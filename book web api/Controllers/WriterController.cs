@@ -2,35 +2,76 @@
 using book_web_api.Services.Writers;
 using book_web_api.Services.Writers.WriterDto;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 
 namespace book_web_api.Controllers
 {
-        [ApiController]
-        [Route("api/writer")]
-    public class WriterController:ControllerBase
+    [ApiController]
+    [Route("api/writers")]
+    public class WriterController : ControllerBase
     {
-      
-            WriterServices _WriterService = new WriterServices();
-            [HttpPost("add-writer")]
-            public void AddWriter([FromBody] AddWriterDTo dto)
+        private readonly WriterServices _writerService;
+
+        public WriterController(WriterServices writerService)
+        {
+            _writerService = writerService ?? throw new ArgumentNullException(nameof(writerService));
+        }
+
+        [HttpPost("add")]
+        public IActionResult AddWriter([FromBody] AddWriterDTo dto)
+        {
+            try
             {
-                _WriterService.AddWriter(dto);
+                _writerService.AddWriter(dto);
+                return Ok("Writer added successfully.");
             }
-            [HttpPatch("update-writer/{id}")]
-            public void UpdateWriter([FromRoute] int id, [FromBody] UpdateWriterDto dto)
+            catch (Exception ex)
             {
-                _WriterService.UpdateWriter(id, dto);
+                return BadRequest(ex.Message);
             }
-            [HttpDelete("delete-writer/{id}")]
-            public void DeleteWriter([FromRoute] int id)
+        }
+
+        [HttpPatch("update/{name}")]
+        public IActionResult UpdateWriter(string name, [FromBody] UpdateWriterDto dto)
+        {
+            try
             {
-                _WriterService.DeleteWriter(id);
+                _writerService.UpdateWriter(name, dto);
+                return Ok("Writer updated successfully.");
             }
-            [HttpGet("get-writer")]
-            public List<Writer> GetWriter()
+            catch (Exception ex)
             {
-                return _WriterService.GetWriter();
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("delete/{name}")]
+        public IActionResult DeleteWriter(string name)
+        {
+            try
+            {
+                _writerService.DeleteWriter(name);
+                return Ok("Writer deleted successfully.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("get")]
+        public IActionResult GetWriters()
+        {
+            try
+            {
+                var writers = _writerService.GetWriters();
+                return Ok(writers);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }
-
+}

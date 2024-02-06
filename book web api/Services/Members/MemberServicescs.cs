@@ -2,102 +2,110 @@
 using book.EntitisMaps;
 using book_web_api.Services.Members.MembersDto;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace book_web_api.Services.Members
 {
-    public class MemberServicescs
+    public class MemberServices
     {
-        EFDBContext _context = new EFDBContext();
+        private readonly EFDBContext _context;
+
+        public MemberServices(EFDBContext context)
+        {
+            _context = context;
+        }
 
         public void AddMember(AddMemberDto dto)
         {
-            var mem = new Member();
-            if (_context.members.Any(_ => _.Name == dto.Name))
+            var member = new Member
             {
-                throw new Exception("name should be unique");
-            }
-            mem.Name = dto.Name;
-            mem.Email = dto.Email;
-          
-            _context.members.Add(mem);
+                Name = dto.Name,
+                Email = dto.Email
+            };
+
+            _context.members.Add(member);
             _context.SaveChanges();
         }
-        public void UpdateMember(int id, UpdateMemberDtoscs dto)
+
+        public void UpdateMember(string name, UpdateMemberDtoscs dto)
         {
-            var member = _context.members.FirstOrDefault(x => x.Id == id);
-            if (member is null)
+            var member = _context.members.FirstOrDefault(m => m.Name == name);
+
+            if (member == null)
             {
-                throw new Exception("user not found");
+                throw new Exception("Member not found.");
             }
+
             member.Name = dto.Name;
-           member.Email = dto.Email;
-            _context.members.Update(member);
+            member.Email = dto.Email;
+
             _context.SaveChanges();
         }
-        public void DeleteMembers(int id)
+
+        public void DeleteMember(string name)
         {
-            var member = _context.members.FirstOrDefault(x => x.Id == id);
-            if (member is null)
+            var member = _context.members.FirstOrDefault(m => m.Name == name);
+
+            if (member == null)
             {
-                throw new Exception("user not found");
+                throw new Exception("Member not found.");
             }
+
             _context.members.Remove(member);
             _context.SaveChanges();
         }
-        public List<Member> GetMember()
-        {
-           return _context.members.Include(_=>_.Rents).ToList();
 
+        public List<Member> GetMembers()
+        {
+            return _context.members.Include(m => m.Rents).ToList();
         }
-       
 
-
-        public void AddMEmberRentBook(MemberAddRentBookDto dto)
+        public void AddMemberRentBook(MemberAddRentBookDto dto)
         {
-            var mem = _context.members.FirstOrDefault(_ => _.Name == dto.Name);
-            if (mem is null)
+            var member = _context.members.FirstOrDefault(m => m.Name == dto.Name);
+            if (member == null)
             {
-                throw new Exception("user not found");
+                throw new Exception("Member not found. Please try again later.");
             }
-            var book = _context.Books.Find(dto.BookId);
-            if (book is null)
-            {
-                throw new Exception("book not found");
-            }
-            var bookRentCount = _context.Rents.Count(_ => _.UserId == mem.Id && _.BackBook == false);
-            if (bookRentCount == 4)
-            {
-                throw new Exception("this user cant have more than 4 book to rent");
-            }
-            if (book.Inventory <= 0)
-            {
-                throw new Exception("we are out of stock choose anothor book");
 
+            var book = _context.Books.Find(dto.BookId);
+            if (book == null)
+            {
+                throw new Exception("Book not found.");
             }
+
             var memRentBook = new Rent
             {
                 BackBook = false,
-                UserId = mem.Id,
-                BookId = book.Id,
-
+                Member = member,
+                Book = book
             };
-            mem.Rents.Add(memRentBook);
+
+            _context.Rents.Add(memRentBook);
             book.Inventory--;
             _context.SaveChanges();
-
         }
+
         public void UpdateMemberRentBook(UpdateMemberRentBookDTo dto)
         {
-            var memRentBook = _context.Rents.FirstOrDefault(_ => _.UserId == dto.UserId && _.BookId == dto.BookId && _.BackBook == false);
-            if (memRentBook is null)
+            var memRentBook = _context.Rents.FirstOrDefault(r => r.UserId == dto.UserId && r.BookId == dto.BookId && !r.BackBook);
+            if (memRentBook == null)
             {
-                throw new Exception("wrong info!!!");
+                throw new Exception("The specified rent book does not exist or has been returned already.");
             }
+
             memRentBook.BackBook = true;
+
             var book = _context.Books.Find(dto.BookId);
+            if (book == null)
+            {
+                throw new Exception("The specified book does not exist.");
+            }
+
             book.Inventory++;
             _context.SaveChanges();
         }
     }
 }
-

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Book.Migrations")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cb7c5b73493b25d5094e828e407d2cb812321b81")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+add9febf6452db9315f1419e80dfc6a75b18be70")]
 [assembly: System.Reflection.AssemblyProductAttribute("Book.Migrations")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Book.Migrations")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

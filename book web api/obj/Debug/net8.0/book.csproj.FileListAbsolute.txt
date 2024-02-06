@@ -134,3 +134,4 @@ F:\tav tamrin\book web api\book web api\obj\Debug\net8.0\refint\book.dll
 F:\tav tamrin\book web api\book web api\obj\Debug\net8.0\book.pdb
 F:\tav tamrin\book web api\book web api\obj\Debug\net8.0\book.genruntimeconfig.cache
 F:\tav tamrin\book web api\book web api\obj\Debug\net8.0\ref\book.dll
+F:\tav tamrin\book web api\book web api\obj\Debug\net8.0\book.sourcelink.json

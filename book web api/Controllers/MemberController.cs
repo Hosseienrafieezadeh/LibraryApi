@@ -2,45 +2,61 @@
 using book_web_api.Services.Members;
 using book_web_api.Services.Members.MembersDto;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace book_web_api.Controllers
 {
     [ApiController]
     [Route("api/member")]
-    public class MemberController
+    public class MemberController : ControllerBase
     {
-        MemberServicescs _MemberSErveices = new MemberServicescs();
+        private readonly MemberServices _memberServices;
+
+        public MemberController(MemberServices memberServices)
+        {
+            _memberServices = memberServices;
+        }
 
         [HttpPost("add-member")]
-        public void AddUMember([FromBody] AddMemberDto dto)
+        public IActionResult AddMember([FromBody] AddMemberDto dto)
         {
-            _MemberSErveices.AddMember(dto);
+            _memberServices.AddMember(dto);
+            return Ok();
         }
+
         [HttpPost("add-member-rent-book")]
-        public void AddMemberRentBook([FromBody] MemberAddRentBookDto dto)
+        public IActionResult AddMemberRentBook([FromBody] MemberAddRentBookDto dto)
         {
-            _MemberSErveices.AddMEmberRentBook(dto);
+            _memberServices.AddMemberRentBook(dto);
+            return Ok();
         }
-        [HttpPatch("member-give-back-rent-book/")]
-        public void UpdateMemberRentBooks([FromBody] UpdateMemberRentBookDTo dto)
+
+        [HttpPatch("member-give-back-rent-book")]
+        public IActionResult UpdateMemberRentBooks([FromBody] UpdateMemberRentBookDTo dto)
         {
-            _MemberSErveices.UpdateMemberRentBook(dto);
+            _memberServices.UpdateMemberRentBook(dto);
+            return Ok();
         }
-        [HttpPatch("update-member/{id}")]
-        public void UpdateMember([FromRoute] int id, [FromBody] UpdateMemberDtoscs dto)
+
+        [HttpPatch("update-member/{name}")]
+        public IActionResult UpdateMember(string name, [FromBody] UpdateMemberDtoscs dto)
         {
-            _MemberSErveices.UpdateMember(id, dto);
+            _memberServices.UpdateMember(name, dto);
+            return Ok();
         }
-        [HttpDelete("delete-member/{id}")]
-        public void DeleteMember([FromRoute] int id)
+
+        [HttpDelete("delete-member/{name}")]
+        public IActionResult DeleteMember(string name)
         {
-            _MemberSErveices.DeleteMembers(id);
+            _memberServices.DeleteMember(name);
+            return Ok();
         }
+
         [HttpGet("get-member")]
-        public List<Member> GetMemberByName()
+        public IActionResult GetMembers()
         {
-            return _MemberSErveices.GetMember();
+            var members = _memberServices.GetMembers();
+            return Ok(members);
         }
-       
     }
 }
